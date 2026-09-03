@@ -74,7 +74,7 @@ public sealed class Server(int port) : IAsyncDisposable
                     case DataType.MessageTextUTF8:
                         {
                             var message = Encoding.UTF8.GetString(receivedData.Data);
-                            Console.WriteLine($"[Server] Client {connection} send message: {message}");
+                            Console.WriteLine($"[Server] Client {connection} sent message: {message}");
                         }
                         break;
                     case DataType.UserNameUTF8:
