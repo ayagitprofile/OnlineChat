@@ -84,7 +84,7 @@ async Task ConsoleOutputAsync(CancellationToken cancellationToken)
         {
             while (incomingMessages.Reader.TryRead(out var message))
             {
-                Console.WriteLine($"Message received from server: {message}");
+                Console.WriteLine(message);
             }
         }
     }

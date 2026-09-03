@@ -2,19 +2,23 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading.Channels;
 using static Protocol.Protocol;
 
 namespace Server;
+
+record struct BroadcastedMessage(ClientConnection Sender, string Message);
 
 public sealed class Server(int port) : IAsyncDisposable
 {
     private static readonly IPAddress THIS_MACHINE_IP_ADRESS = IPAddress.Loopback;
 
     private ConcurrentDictionary<Guid, ClientConnection> _clientConnections = new();
-    private ConcurrentBag<Task> _clientHandlers = new();
+    private ConcurrentBag<Task> _concurrentTasks = [];
 
     private CancellationTokenSource _cancellationTokenSource = new();
+
+    private Channel<BroadcastedMessage> _broadcastedMessages = Channel.CreateUnbounded<BroadcastedMessage>();
 
     public async Task Run()
     {
@@ -26,6 +30,8 @@ public sealed class Server(int port) : IAsyncDisposable
 
         try
         {
+            _concurrentTasks.Add(BroadcastMessagesAsync(_cancellationTokenSource.Token));
+
             while (true)
             {
                 var client = await listener.AcceptTcpClientAsync();
@@ -51,8 +57,39 @@ public sealed class Server(int port) : IAsyncDisposable
             if (_clientConnections.TryAdd(id, connection))
             {
                 Console.WriteLine($"[Server] Client accepted: {connection}");
-                _clientHandlers.Add(HandleClientConnection(id, cancellationToken));
+                _concurrentTasks.Add(HandleClientConnection(id, cancellationToken));
             }
+        }
+    }
+
+    private async Task BroadcastMessagesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (await _broadcastedMessages.Reader.WaitToReadAsync(cancellationToken))
+            {
+                if (_broadcastedMessages.Reader.TryRead(out var message))
+                {
+                    foreach (var client in _clientConnections)
+                    {
+                        if (client.Value == message.Sender)
+                        {
+                            continue;
+                        }
+
+                        await WriteAsync
+                        (
+                            client.Value.Client.GetStream(),
+                            new OutgoingData(DataType.MessageTextUTF8, Encoding.UTF8.GetBytes($"{message.Sender.Name}: {message.Message}")),
+                            cancellationToken
+                        );
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+
         }
     }
 
@@ -75,6 +112,7 @@ public sealed class Server(int port) : IAsyncDisposable
                         {
                             var message = Encoding.UTF8.GetString(receivedData.Data);
                             Console.WriteLine($"[Server] Client {connection} sent message: {message}");
+                            await _broadcastedMessages.Writer.WriteAsync(new BroadcastedMessage(connection, message), cancellationToken);
                         }
                         break;
                     case DataType.UserNameUTF8:
@@ -136,7 +174,7 @@ public sealed class Server(int port) : IAsyncDisposable
     {
         Console.WriteLine("[Server] Shutting down");
         _cancellationTokenSource.Cancel();
-        await Task.WhenAll(_clientHandlers);
+        await Task.WhenAll(_concurrentTasks);
         _cancellationTokenSource.Dispose();
     }
 }
