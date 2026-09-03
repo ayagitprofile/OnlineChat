@@ -1,2 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿await using var server = new Server.Server(port: 5000);
+
+await server.Run();
