@@ -39,7 +39,7 @@ public partial class MainWindow : Window
 
         try
         {
-            while (await Protocol.Protocol.ReadAsync(stream, cancellationToken) is Protocol.Protocol.ReceivedData receivedData)
+            while (!cancellationToken.IsCancellationRequested && await Protocol.Protocol.ReadAsync(stream, cancellationToken) is Protocol.Protocol.ReceivedData receivedData)
             {
                 switch (receivedData.Type)
                 {
@@ -62,7 +62,11 @@ public partial class MainWindow : Window
                         break;
                 }
             }
-            handleServerDisconnecting();
+
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                handleServerDisconnecting();
+            }
         }
         catch (IOException)
         {
@@ -76,23 +80,23 @@ public partial class MainWindow : Window
 
     private void Window_Closed(object? sender, EventArgs e)
     {
-        Console.WriteLine("Window closed");
+        _messageRecieverCancellationTokenSource.Cancel(true);
 
-        _messageRecieverCancellationTokenSource.Cancel();
-
-        _messageReceiverTask.Wait();
+        _messageReceiverTask.Wait(100);
 
         _clientConnection.Close();
 
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            desktop.MainWindow = null;
             desktop.Shutdown();
         }
+
+        Console.WriteLine("Window closed");
     }
 
     private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        // Don't remove focus when clicking the input itself.
         if (e.Source is Control control && (control == MessageInput))
         {
             return;
