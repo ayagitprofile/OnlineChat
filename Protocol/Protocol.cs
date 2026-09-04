@@ -9,8 +9,11 @@ public class Protocol
     public enum DataType : uint
     {
         MessageTextUTF8,
-        UserNameUTF8
+        UserNameUTF8,
+        ChatMessageJson
     }
+
+    public record ChatMessage(string SenderName, string Text, DateTimeOffset Timestamp);
 
     public record OutgoingData(DataType Type, ReadOnlyMemory<byte> Data);
 

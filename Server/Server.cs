@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Channels;
 using static Protocol.Protocol;
 
@@ -11,8 +12,6 @@ record struct BroadcastedMessage(ClientConnection Sender, string Message);
 
 public sealed class Server(int port) : IAsyncDisposable
 {
-    private static readonly IPAddress THIS_MACHINE_IP_ADRESS = IPAddress.Loopback;
-
     private ConcurrentDictionary<Guid, ClientConnection> _clientConnections = new();
     private ConcurrentBag<Task> _concurrentTasks = [];
 
@@ -22,11 +21,15 @@ public sealed class Server(int port) : IAsyncDisposable
 
     public async Task Run()
     {
-        var listener = new TcpListener(THIS_MACHINE_IP_ADRESS, port);
+        using var http = new HttpClient();
+
+        var publicIp = await http.GetStringAsync("https://api.ipify.org");
+
+        var listener = new TcpListener(IPAddress.Any, port);
 
         listener.Start();
 
-        Console.WriteLine($"[Server] Started listening on port: {port}");
+        Console.WriteLine($"[Server] Started\n[Server] Public IP: {publicIp}, Listening on port: {port}");
 
         try
         {
@@ -77,10 +80,12 @@ public sealed class Server(int port) : IAsyncDisposable
                             continue;
                         }
 
+                        var json = JsonSerializer.SerializeToUtf8Bytes(new ChatMessage(message.Sender.Name, message.Message, DateTimeOffset.Now));
+
                         await WriteAsync
                         (
                             client.Value.Client.GetStream(),
-                            new OutgoingData(DataType.MessageTextUTF8, Encoding.UTF8.GetBytes($"{message.Sender.Name}: {message.Message}")),
+                            new OutgoingData(DataType.ChatMessageJson, json),
                             cancellationToken
                         );
                     }
