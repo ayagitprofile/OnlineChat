@@ -1,0 +1,98 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="DesktopClient.LoginWindow"
+    Width="450"
+    Height="420"
+    Title="Connect to Server"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid
+        Margin="35"
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*"
+        RowSpacing="15">
+
+        <!-- Title -->
+        <StackPanel Grid.Row="0"
+                    Spacing="5">
+
+            <TextBlock
+                Text="Connect to Chat"
+                FontSize="28"
+                FontWeight="Bold"/>
+
+            <TextBlock
+                Text="Enter your details to connect to a server."
+                Opacity="0.65"/>
+
+        </StackPanel>
+
+
+        <!-- Name -->
+        <StackPanel Grid.Row="1"
+                    Spacing="5">
+
+            <TextBlock
+                Text="Your name"
+                FontWeight="SemiBold"/>
+
+            <TextBox
+                x:Name="NameInput"
+                Watermark="Enter your name"
+                MinHeight="40"/>
+
+        </StackPanel>
+
+
+        <!-- IP -->
+        <StackPanel Grid.Row="2"
+                    Spacing="5">
+
+            <TextBlock
+                Text="Server IP address"
+                FontWeight="SemiBold"/>
+
+            <TextBox
+                x:Name="IpInput"
+                Watermark="Example: 192.168.1.100"
+                MinHeight="40"/>
+
+        </StackPanel>
+
+
+        <!-- Port -->
+        <StackPanel Grid.Row="3"
+                    Spacing="5">
+
+            <TextBlock
+                Text="Server port"
+                FontWeight="SemiBold"/>
+
+            <TextBox
+                x:Name="PortInput"
+                Watermark="Example: 5000"
+                MinHeight="40"/>
+
+        </StackPanel>
+
+
+        <!-- Error -->
+        <TextBlock
+            x:Name="ErrorText"
+            Grid.Row="4"
+            Foreground="#FF5555"
+            TextWrapping="Wrap"/>
+
+
+        <!-- Connect -->
+        <Button
+            x:Name="ConnectButton"
+            Grid.Row="5"
+            Content="Connect"
+            MinHeight="42"
+            HorizontalContentAlignment="Center"
+            Click="ConnectButton_Click"/>
+
+    </Grid>
+
+</Window>

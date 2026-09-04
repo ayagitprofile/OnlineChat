@@ -1,0 +1,97 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="DesktopClient.MainWindow"
+    Width="800"
+    Height="600"
+    Title="Chat Client"
+    Background="#181818"
+    PointerPressed="Window_PointerPressed"
+    WindowStartupLocation="CenterScreen"
+    Closed="Window_Closed">
+
+    <Grid RowDefinitions="60,*,70">
+
+        <!-- Header -->
+        <Border
+            Grid.Row="0"
+            Background="#242424"
+            Padding="20,0">
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <TextBlock
+                    x:Name="ChatTitle"
+                    Text="My Chat"
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    VerticalAlignment="Center"/>
+
+                <TextBlock
+                    x:Name="ConnectionStatus"
+                    Grid.Column="1"
+                    Text="● Connected"
+                    FontSize="14"
+                    Foreground="#6BCB77"
+                    VerticalAlignment="Center"/>
+
+            </Grid>
+        </Border>
+
+        <!-- Message area -->
+        <ScrollViewer
+            x:Name="MessageScrollViewer"
+            Grid.Row="1"
+            Padding="20"
+            VerticalScrollBarVisibility="Auto">
+
+            <StackPanel
+                x:Name="MessagesPanel"
+                Spacing="12"/>
+
+        </ScrollViewer>
+
+
+        <!-- Bottom input -->
+        <Border
+            Grid.Row="2"
+            Background="#242424"
+            Padding="12">
+
+            <Grid
+                ColumnDefinitions="*,100"
+                ColumnSpacing="10">
+
+                <TextBox
+                    x:Name="MessageInput"
+                    Grid.Column="0"
+                    FontSize="16"
+                    Foreground="White"
+                    Background="#333333"
+                    BorderBrush="#444444"
+                    BorderThickness="1"
+                    Padding="12"
+                    Watermark="Type a message..."
+                    VerticalContentAlignment="Center"
+                    KeyDown="MessageInput_KeyDown"/>
+
+                <Button
+                    x:Name="SendButton"
+                    Grid.Column="1"
+                    Content="Send"
+                    FontSize="16"
+                    Foreground="White"
+                    Background="#2563EB"
+                    BorderBrush="#2563EB"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="SendButton_Click"/>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+</Window>
