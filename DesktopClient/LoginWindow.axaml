@@ -61,25 +61,26 @@
 
 
         <!-- Port -->
-        <StackPanel Grid.Row="3"
-                    Spacing="5">
+        <!-- <StackPanel Grid.Row="3"
+        Spacing="5">
 
-            <TextBlock
-                Text="Server port"
-                FontWeight="SemiBold"/>
+        <TextBlock
+        Text="Server port"
+        FontWeight="SemiBold"/>
 
-            <TextBox
-                x:Name="PortInput"
-                Watermark="Example: 5000"
-                MinHeight="40"/>
+        <TextBox
+        x:Name="PortInput"
+        Watermark="Example: 5000"
+        MinHeight="40"
+        />
 
-        </StackPanel>
+        </StackPanel> -->
 
 
         <!-- Error -->
         <TextBlock
             x:Name="ErrorText"
-            Grid.Row="4"
+            Grid.Row="3"
             Foreground="#FF5555"
             TextWrapping="Wrap"/>
 
@@ -90,7 +91,7 @@
             Grid.Row="5"
             Content="Connect"
             MinHeight="42"
-            HorizontalContentAlignment="Center"
+            HorizontalAlignment="Right"
             Click="ConnectButton_Click"/>
 
     </Grid>

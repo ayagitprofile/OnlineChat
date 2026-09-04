@@ -10,6 +10,8 @@ using UserLoginIsDoneCallback = Action<LoginWindow, string, IPAddress, int>;
 
 public partial class LoginWindow : Window
 {
+    private const int PORT = 5000;
+
     private UserLoginIsDoneCallback _userLoginIsDoneCallback;
 
     public bool ConnectButtonEnabled { get => ConnectButton.IsEnabled; set => ConnectButton.IsEnabled = value; }
@@ -36,7 +38,7 @@ public partial class LoginWindow : Window
 
         string name = NameInput.Text?.Trim() ?? string.Empty;
         string ip = IpInput.Text?.Trim() ?? string.Empty;
-        string portText = PortInput.Text?.Trim() ?? string.Empty;
+        // string portText = PortInput.Text?.Trim() ?? string.Empty;
 
         // Validate name
         if (string.IsNullOrWhiteSpace(name))
@@ -54,18 +56,18 @@ public partial class LoginWindow : Window
             return;
         }
 
-        // Validate port
-        if (!int.TryParse(portText, out int port) ||
-            port < 1 ||
-            port > 65535)
-        {
-            ShowError("Please enter a valid port between 1 and 65535.");
-            PortInput.Focus();
-            return;
-        }
+        // // Validate port
+        // if (!int.TryParse(portText, out int port) ||
+        //     port < 1 ||
+        //     port > 65535)
+        // {
+        //     ShowError("Please enter a valid port between 1 and 65535.");
+        //     PortInput.Focus();
+        //     return;
+        // }
 
         // Data is valid.
-        _userLoginIsDoneCallback.Invoke(this, name, IPAddress.Parse(ip), port);
+        _userLoginIsDoneCallback.Invoke(this, name, IPAddress.Parse(ip), PORT);
     }
 
     public void ShowError(string message)

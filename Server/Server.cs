@@ -29,7 +29,7 @@ public sealed class Server(int port) : IAsyncDisposable
 
         listener.Start();
 
-        Console.WriteLine($"[Server] Started\n[Server] Public IP: {publicIp}, Listening on port: {port}");
+        Console.WriteLine($"[Server] Started\n[Server] Public IP: {publicIp}\n[Server] Local IP: {IPAddress.Loopback}\n[Server] Listening on port: {port}");
 
         try
         {
@@ -128,11 +128,11 @@ public sealed class Server(int port) : IAsyncDisposable
                 }
             }
 
-            Console.WriteLine($"[Server] Client {connection.Name} disconnected");
+            Console.WriteLine($"[Server] Client ({connection.Name}) disconnected");
         }
         catch (Exception e)
         {
-            Console.WriteLine($"[Server] Client {connection.Name} disconnected unexpectedly, why: {e.Message}");
+            Console.WriteLine($"[Server] Client ({connection.Name}) disconnected unexpectedly, why: {e.Message}");
         }
         finally
         {
